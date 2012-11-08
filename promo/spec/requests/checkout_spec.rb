@@ -47,13 +47,6 @@ describe "Checkout" do
         click_button "add-to-cart-button"
       end
 
-      it "cannot enter a promotion code that was created after the order" do
-        promotion.update_column(:created_at, 1.day.from_now)
-        fill_in "Coupon code", :with => "onetwo"
-        click_button "Apply"
-        page.should have_content("The coupon code you entered doesn't exist. Please try again.")
-      end
-
       it "can enter a promotion code with both upper and lower case letters" do
         promotion.update_column(:created_at, 1.minute.ago)
         fill_in "Coupon code", :with => "ONETWO"
