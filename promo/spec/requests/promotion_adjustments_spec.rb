@@ -332,10 +332,10 @@ describe "Promotion Adjustments" do
       # promotional adjustments are not removed if they are already applied
       # to a order. More info: https://github.com/spree/spree/pull/1984
 
-      # promo.actions.first.calculator.preferred_amount = 10.00
-
-      # click_button "Update"
-      # Spree::Order.last.total.to_f.should == 30.00
+      promo.actions.first.calculator.preferred_amount = 10.00
+      sleep(60)
+      click_button "Update"
+      Spree::Order.last.total.to_f.should == 30.00
     end
 
     it "should pick the best promotion when two promotions exist for the same product" do

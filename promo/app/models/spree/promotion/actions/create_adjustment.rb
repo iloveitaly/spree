@@ -11,6 +11,7 @@ module Spree
         def perform(options = {})
           return unless order = options[:order]
           # Nothing to do if the promotion is already associated with the order
+          puts "DOES IT EXIST? #{order.promotion_credit_exists?(promotion)}"
           return if order.promotion_credit_exists?(promotion)
 
           amount = compute_amount(order)

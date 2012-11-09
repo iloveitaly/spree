@@ -41,6 +41,7 @@ module Spree
     end
 
     def activate(payload)
+      puts "ACTIVATE! #{payload }"
       return unless order_activatable? payload[:order]
 
       if code.present?
@@ -52,8 +53,29 @@ module Spree
         return unless path == payload[:path]
       end
 
+      order = payload[:order]
+      puts order.adjustments.promotion.inspect
+      order.promotions ||= []
+      order.promotions += order.adjustments.promotion.map(&:originator).map(&:promotion)
+      # order.promotions.uniq! { |p| p.id }
+
+      puts order.promotions.inspect
+      order.adjustments.promotion.reload.delete_all
+      order.update!
+
+      # another idea:
+      #   * build the promotion stack here based on all passed ineligible promotions
+      #   * need hook in checkout / orders controller for promotion update right after update_attributes
+      #     look at the update_hooks in the order model... that might work
+      #   * can do a max compare here adding up the value of all the actions and picking the best promotion
+      #   * line item actions will be a problem... how will they be removed when things go wrong?
+
       actions.each do |action|
         action.perform(payload)
+      end
+
+      order.promotions.map(&:actions).each do |action|
+        action.perform(payload[:order])
       end
     end
 
